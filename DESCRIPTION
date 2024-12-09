@@ -1,0 +1,17 @@
+Package: SA24204167
+Type: Package
+Title: Empirical distribution & Ranks and Signs for Spherical data based on optimal transport
+Version: 1.0
+Author: xxy
+Maintainer: xxy <1299924927@qq.com>
+Description: Based on optimal transport approach, this package helps users obtain distribution-free empirical distribution function as well as ranks and signs for directional data in three dimension.
+License: GPL (>=2)
+Imports: Rcpp, slam, RiemBase, transport
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
+LinkingTo: Rcpp
+RoxygenNote: 7.3.2
+Encoding: UTF-8
+URL: http://github.com/xxyshiro/SA24204167
+BugReports: http://github.com/xxyshiro/SA24204167/issues
+
