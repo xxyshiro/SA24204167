@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="SA24204167" />
+
+<meta name="date" content="2024-12-09" />
+
+<title>Introduction to SphRankSign package</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to SphRankSign package</h1>
+<h4 class="author">SA24204167</h4>
+<h4 class="date">2024-12-09</h4>
+
+
+
+<div id="preliminaries" class="section level2">
+<h2>Preliminaries</h2>
+<div id="球面数据的分布函数" class="section level4">
+<h4>球面数据的分布函数</h4>
+<p><span class="math inline">\(d\)</span>-维欧氏空间中的单位球面<span class="math inline">\(\mathcal{S}^{d-1}\)</span>上的分布函数和分位数函数是基于从球面上的一般概率测度<span class="math inline">\(\mathrm{P}\)</span>（of non-vanishing
+densities）到球面均匀分布<span class="math inline">\(\mathrm{P}^\mathbf{U}\)</span>的最优传输<span class="math inline">\(\mathbf{F}\)</span>建立的。</p>
+<p>我们定义球面距离<span class="math inline">\(d(\mathbf{x},\mathbf{y})=|\mathrm{acos}(\mathbf{x}^T\mathbf{y})|\)</span>和点到点传输的成本函数<span class="math inline">\(c(\mathbf{x}, \mathbf{y})=d^2(\mathbf{x},
+\mathbf{y})/2\)</span>，该成本函数为Riemann距离。</p>
+<p>对于<span class="math inline">\(\mathcal{S}^{d-1}\)</span>上的随机向量<span class="math inline">\(\mathbf{Z}\sim
+\mathrm{P}^\mathbf{Z}\)</span>，其分布函数为a.s.唯一的最优传输<span class="math inline">\(\mathbf{F}:\mathcal{S}^{d-1}\rightarrow\mathcal{S}^{d-1}\)</span>，使得<span class="math inline">\(\mathbf{F}\#\mathrm{P}^\mathbf{Z}=\mathrm{P}^\mathbf{U}\)</span>。</p>
+</div>
+<div id="经验分布函数" class="section level4">
+<h4>经验分布函数</h4>
+<p>这种分布函数的经验版本则依赖于样本点<span class="math inline">\(\mathbf{Z}^{(n)}\)</span>向人为构造的服从球面上的离散均匀分布的格点<span class="math inline">\(\mathfrak{G}^{(n)}\)</span>的最优配对而建立。</p>
+<p>记<span class="math inline">\(\mathcal{P}([[ n]])\)</span>为<span class="math inline">\(\{1,\dots,n\}\)</span>全体置换的集合。那么<span class="math inline">\(\mathbf{Z}^{(n)}_1,\dots,\mathbf{Z}^{(n)}_n\)</span>的经验分布函数<span class="math inline">\(\mathbf{F}^{(n)}:\mathbf{Z}^{(n)}\rightarrow
+\mathfrak{G}^{(n)}\)</span>满足 <span class="math display">\[
+\sum_{i=1}^{n}c(\mathbf{Z}_i^{(n)},\mathbf{F}^{(n)}(\mathbf{Z}_i^{(n)}))=\min_{T\in
+\mathcal{P}([[n]])}\sum_{i=1}^{n}c(\mathbf{Z}_i^{(n)},
+\mathfrak{G}_{T(i)}^{(n)}).
+\]</span></p>
+</div>
+<div id="rank-and-sign" class="section level4">
+<h4>Rank and Sign</h4>
+<p>得到球面数据的Rank and
+Sign依赖于我们构造出蕴含rank和sign的自然定义的格点。首先我们对样本点数<span class="math inline">\(n\)</span>进行如下分解：<span class="math display">\[\begin{equation}
+\begin{split}
+    &amp;n = n_Rn_S + n_0\text{, }~n_R, n_S\in \mathbb{Z}_+\text{,}~0\le
+n_0 &lt; \text{min}\{n_R, n_S\}\text{，}\\
+    &amp;n_R, n_S\rightarrow \infty\text{ as }n\rightarrow \infty.
+\end{split}
+\end{equation}\]</span>
+我们这个包仅对三维欧氏空间中的单位球面上的随机向量进行求解经验分布，在这种情形下，我们接下来要说明的事情就变得非常直观。各位只需要想象地球的经纬线和它们彼此的交点。各格点围绕地球的自转轴（或者说北极点）旋转对称分布，我们约定北极点对应了<span class="math inline">\(R = 0\)</span>以及<span class="math inline">\(\mathbf{S} =
+0\)</span>的点，那么从北纬90度往下，一层一层的纬线就对应了逐渐增大的rank(<span class="math inline">\(R\)</span>)，而经线的度数则反映了与rank正交（独立）的方向(sign,
+<span class="math inline">\(\mathbf{S}\)</span>)的信息。显然这些格点在球面上是离散均匀分布的。（Note
+that 三维球面被在z轴的直径上均匀分布的横截面等分表面积。）</p>
+<p>我们构造的格点由两部分组成： 1.<span class="math inline">\(n_0\)</span>个北极点<span class="math inline">\(\boldsymbol{\theta}^{(n)}\)</span>； 2.<span class="math inline">\(n_R\)</span>条纬线与<span class="math inline">\(n_S\)</span>条经线的交点。</p>
+<p>这里忽略了说明如何估计北极点的位置的问题。根据rank和sign的旋转对称性，我们可以知道比较合理的与之对应的点是样本中位数，例如Fr&#39;echet均值，总之经过一些简单的操作我们可以得到北极点的相合估计<span class="math inline">\(\hat{\boldsymbol{\theta}}^{(n)}\)</span>。</p>
+<p>接下来只需要对样本点和该格点求解最小化传输成本的配对即可。</p>
+</div>
+</div>
+<div id="computational-results" class="section level2">
+<h2>Computational results</h2>
+<p>先生成数据：该数据的特点为，中心接近<span class="math inline">\((0,
+0, 1)\)</span>, 理论上绕<span class="math inline">\((0,0,1)\)</span>旋转对称分布。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(slam)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>n <span class="ot">=</span> <span class="dv">500</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">mvrnorm</span>(n, <span class="at">mu =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">3</span>), <span class="at">Sigma =</span> <span class="fu">diag</span>(<span class="dv">3</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>data <span class="ot">=</span> data <span class="sc">/</span> <span class="fu">row_norms</span>(data)</span></code></pre></div>
+<p>测试包里的两个R函数：（<code>Fn</code>和<code>RankSign</code>）</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(SphRankSign)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>temp <span class="ot">=</span> <span class="fu">Fn</span>(data, <span class="dv">25</span>, <span class="dv">20</span>, <span class="dv">0</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>temp<span class="sc">$</span>FnTheta  <span class="do">## the axis (North Pole)</span></span></code></pre></div>
+<pre><code>## [1]  0.05964616 -0.02203451  0.99797636</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>Fnn <span class="ot">=</span> temp<span class="sc">$</span>Fn <span class="do">## empirical distribution</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>Fnn[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, ]</span></code></pre></div>
+<pre><code>##            [,1]       [,2]       [,3]
+## [1,]  0.7138968  0.4227996 -0.5582041
+## [2,]  0.7412126 -0.0148175  0.6711068
+## [3,]  0.3623019 -0.5129965  0.7781850
+## [4,]  0.7116864 -0.6732631 -0.2005474
+## [5,] -0.7985536  0.5749543 -0.1781563</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">RankSign</span>(data, <span class="dv">25</span>, <span class="dv">20</span>, <span class="dv">0</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>Rn <span class="ot">=</span> res<span class="sc">$</span>rank <span class="do">## ranks</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>Rn[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code></pre></div>
+<pre><code>##  [1] 17  4  2 13 12 17 13 11 14  3</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>Sn <span class="ot">=</span> res<span class="sc">$</span>sign <span class="do">## signs</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>Sn[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, ]</span></code></pre></div>
+<pre><code>##            [,1]       [,2]        [,3]
+## [1,]  0.8673476  0.4646473  0.17835626
+## [2,]  0.9586807  0.2315815  0.16523110
+## [3,]  0.7215159 -0.6918963  0.02634986
+## [4,]  0.7215159 -0.6918963  0.02634986
+## [5,] -0.8007459  0.5970315 -0.04857338</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>res<span class="sc">$</span>FnTheta   <span class="do">## the axis</span></span></code></pre></div>
+<pre><code>## [1] -0.1426281 -0.1112788  0.9835010</code></pre>
+<p>R包里基于KM算法的Rcpp函数<code>opt_coupling</code>与<code>transport</code>包里的<code>transport</code>进行运算速度对比：</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>p <span class="ot">=</span> <span class="fu">length</span>(data[<span class="dv">1</span>, ])</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>UU <span class="ot">=</span> <span class="fu">array</span>(<span class="fu">rnorm</span>(n<span class="sc">*</span>p) , <span class="at">dim =</span> <span class="fu">c</span>(n,p))</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>U <span class="ot">=</span> <span class="fu">diag</span>(<span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span>(UU<span class="sc">%*%</span><span class="fu">t</span>(UU)))))<span class="sc">%*%</span>UU</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>d <span class="ot">=</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, n, n)  <span class="do">## transportation cost matrix</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>    d[i,j] <span class="ot">=</span> (<span class="fu">acos</span>(<span class="fu">t</span>(data[i,])<span class="sc">%*%</span>U[j,]))<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>  }</span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>}</span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="fu">library</span>(transport)</span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="fu">library</span>(Rcpp)</span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="fu">sourceCpp</span>(<span class="st">&#39;../src/KM.cpp&#39;</span>)</span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="fu">library</span>(microbenchmark)</span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a>tm2 <span class="ot">&lt;-</span> <span class="fu">microbenchmark</span>(</span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a>  <span class="at">ot1 =</span> <span class="fu">transport</span>(<span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="fu">rep</span>(<span class="dv">1</span>, n), <span class="at">costm =</span> d, <span class="at">method =</span> <span class="st">&quot;networkflow&quot;</span>)<span class="sc">$</span>to,</span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a>  <span class="at">ot2 =</span> <span class="fu">opt_coupling</span>(d, <span class="fu">rep</span>(<span class="dv">1</span>, n))</span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a>)</span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a></span>
+<span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">summary</span>(tm2)[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">5</span>,<span class="dv">6</span>)])</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">expr</th>
+<th align="right">lq</th>
+<th align="right">median</th>
+<th align="right">uq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ot1</td>
+<td align="right">60.42635</td>
+<td align="right">62.0446</td>
+<td align="right">64.70185</td>
+</tr>
+<tr class="even">
+<td align="left">ot2</td>
+<td align="right">122.29765</td>
+<td align="right">125.0134</td>
+<td align="right">127.33380</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
